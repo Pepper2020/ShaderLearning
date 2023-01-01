@@ -41,8 +41,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 8bc445bb79654bf496c92d0407840a92, type: 3}
-        m_Scale: {x: 1.54, y: 1}
+        m_Texture: {fileID: 2800000, guid: c3fda74a71d984895ac81c4aec4135a8, type: 3}
+        m_Scale: {x: 0.5, y: 0.5}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
@@ -56,10 +56,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _myBump:
+        m_Texture: {fileID: 2800000, guid: e22a05bb3fd574d6aac02b81092a4a71, type: 3}
+        m_Scale: {x: 0.5, y: 0.5}
+        m_Offset: {x: 0, y: 0}
     - _myCube:
         m_Texture: {fileID: 8900000, guid: 29c8372e680e610478fadc77b29553db, type: 3}
-        m_Scale: {x: 5.48, y: 1}
-        m_Offset: {x: 6.28, y: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _BumpScale: 1
@@ -79,9 +83,10 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     - _myFloat: 0.5
-    - _myRange: 1
+    - _myRange: 1.03
+    - _myScale: 1.63
     m_Colors:
-    - _Color: {r: 0.2984514, g: 0.64772606, b: 0.764151, a: 0.61960787}
+    - _Color: {r: 1, g: 1, b: 1, a: 0.61960787}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _myVector: {r: 0.5, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

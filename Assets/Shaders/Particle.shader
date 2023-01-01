@@ -4,10 +4,12 @@ Shader "Custom/Particle"
     {
         _Color ("Color", Color) = (1,1,1,1)
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
-        _myRange ("Range", Range(0, 5)) = 1
+        _myRange ("Range", Range(0, 2)) = 0.5
+        _myScale ("Scale", Range(0.1, 5)) = 1
         _myCube ("SampleCube", CUBE) = "" {}
         _myFloat ("Example Float", Float) = 0.5
         _myVector ("Example Vector", Vector) = (0.5, 1, 1, 1)
+        _myBump ("Bump Texture", 2D) = "bump" {}
         //_Glossiness ("Smoothness", Range(0,1)) = 0.5
         //_Metallic ("Metallic", Range(0,1)) = 0.0
     }
@@ -23,22 +25,27 @@ Shader "Custom/Particle"
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
 
-        //sampler2D _MainTex;
+        
 
-        struct Input
-        {
-            float2 uv_MainTex;
-            float3 worldRefl;
-        };
+        
 
         //half _Glossiness;
         //half _Metallic;
         fixed4 _Color;
         sampler2D _MainTex;
         half _myRange;
+        half _myScale;
         samplerCUBE _myCube;
         float _myFloat;
         float4 _myVector;
+        sampler2D _myBump;
+
+        struct Input
+        {
+            float2 uv_MainTex;
+            float2 uv_myBump;
+            float3 worldRefl;
+        };
 
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
         // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -50,10 +57,12 @@ Shader "Custom/Particle"
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
             // Albedo comes from a texture tinted by color
-            fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
+            fixed4 c = tex2D (_MainTex, IN.uv_MainTex * _myScale) * _Color;
             o.Albedo = c.rgb;
             o.Alpha = c.a;
-            o.Emission = texCUBE(_myCube, IN.worldRefl).rgb;
+            //o.Emission = texCUBE(_myCube, IN.worldRefl).rgb;
+            o.Normal = UnpackNormal(tex2D(_myBump, IN.uv_myBump * _myScale));
+            o.Normal *= float3(_myRange, _myRange, 1);
             // Metallic and smoothness come from slider variables
             //o.Metallic = _Metallic;
             //o.Smoothness = _Glossiness;
