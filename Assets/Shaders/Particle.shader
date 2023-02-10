@@ -12,7 +12,9 @@ Shader "Custom/Particle"
         _myVector ("Example Vector", Vector) = (0.5, 1, 1, 1)
         _myBump ("Bump Texture", 2D) = "bump" {}
         _rimCol("Rim Color", Color) = (1, 1, 1, 1)
-        _rimPower("Rim Power", Range(0.1, 5)) = 3
+        _rimPower("Rim Power", Range(0.1, 10)) = 3
+        _rimWidth("Rim Width", Range(0.1, 10)) = 3
+        _stripWidth("Strip Width", Range(1, 10)) = 3
         //_Glossiness ("Smoothness", Range(0,1)) = 0.5
         //_Metallic ("Metallic", Range(0,1)) = 0.0
     }
@@ -44,6 +46,8 @@ Shader "Custom/Particle"
         float4 _myVector;
         sampler2D _myBump;
         half _rimPower;
+        half _stripWidth;
+        half _rimWidth;
         fixed4 _rimCol;
 
         struct Input
@@ -52,6 +56,7 @@ Shader "Custom/Particle"
             float2 uv_myBump;
             float3 worldRefl; INTERNAL_DATA
             float3 viewDir;
+            float3 worldPos;
         };
 
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
@@ -64,14 +69,20 @@ Shader "Custom/Particle"
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
             // Albedo comes from a texture tinted by color
+            _rimPower = 5 / _rimPower;
+            _rimWidth = 1 / _rimWidth;
             fixed4 c = tex2D (_MainTex, IN.uv_MainTex * _myScale) * _Color;
-            half rim = dot(normalize(IN.viewDir), o.Normal);
-            o.Albedo = c.rgb;
+            half rim = 1.0 - dot(normalize(IN.viewDir), o.Normal);
+            _rimCol = rim < _rimWidth ? _rimCol : fixed4(1, 0, 0, 1);
+            //if (rim < _rimWidth) rim = 0;
+            rim = pow(rim, _rimPower);
+
+            o.Albedo = frac(IN.worldPos.y * _stripWidth) > 0.5 ? c.rgb * rim : float3(0, 1, 0) * rim;
             //o.Alpha = c.a;
             o.Normal = UnpackNormal(tex2D(_myBump, IN.uv_myBump * _myScale));
             o.Normal *= float3(_myRange, _myRange, _myBrightness);
             //o.Emission = texCUBE(_myCube, IN.worldRefl).rgb;
-            o.Emission = texCUBE(_myCube, WorldReflectionVector (IN, o.Normal)).rgb * pow((1-rim), _rimPower) * _rimCol;
+            o.Emission = texCUBE(_myCube, WorldReflectionVector (IN, o.Normal)).rgb * rim * _rimCol;
             // Metallic and smoothness come from slider variables
             //o.Metallic = _Metallic;
             //o.Smoothness = _Glossiness;
